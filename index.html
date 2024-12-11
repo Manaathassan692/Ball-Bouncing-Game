@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball Bouncing Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB, #ffffff);
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let ball = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 20,
+        dx: 4,
+        dy: 4,
+        color: 'red',
+    };
+
+    let paddle = {
+        width: 150,
+        height: 20,
+        x: canvas.width / 2 - 75,
+        color: 'blue',
+    };
+
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fillStyle = ball.color;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawPaddle() {
+        ctx.fillStyle = paddle.color;
+        ctx.fillRect(paddle.x, canvas.height - paddle.height, paddle.width, paddle.height);
+    }
+
+    function movePaddle(event) {
+        const rect = canvas.getBoundingClientRect();
+        paddle.x = event.clientX - rect.left - paddle.width / 2;
+    }
+
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawPaddle();
+
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+            ball.dx = -ball.dx;
+        }
+
+        if (ball.y - ball.radius < 0) {
+            ball.dy = -ball.dy;
+        }
+
+        if (
+            ball.y + ball.radius > canvas.height - paddle.height &&
+            ball.x > paddle.x &&
+            ball.x < paddle.x + paddle.width
+        ) {
+            ball.dy = -ball.dy;
+        }
+
+        if (ball.y + ball.radius > canvas.height) {
+            alert('Game Over!');
+            document.location.reload();
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    canvas.addEventListener('mousemove', movePaddle);
+    update();
+</script>
+</body>
+</html>
